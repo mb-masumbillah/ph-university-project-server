@@ -1,60 +1,90 @@
 // <---------------------Fourth. Controller file create ---------------------->
 
-import { Request, Response } from 'express';
 import { StudentServices } from './student.service';
+import sendResponse from '../../../utils/sendResponse';
+import catchAsync from '../../../utils/catchAsync';
+import { StatusCodes } from 'http-status-codes';
+// import studentValidationSchema from './student.joi.validation';
 
-const createStudent = async (req: Request, res: Response) => {
-  try {
-    // const student = req.body.student;
-    const { student: studentData } = req.body;
+// const createStudent = async (req: Request, res: Response) => {
+//   try {
+//     // const student = req.body.student;
+//     const { student: studentData } = req.body;
 
-    // we call "service" funciton to send this data
-    const result = await StudentServices.createStudentIntoDB(studentData);
+//     // Joi library validation checking
+//     // const { error, value } = studentValidationSchema.validate(studentData);
+//     // if (error) {
+//     //   res.status(200).json({
+//     //     success: true,
+//     //     message: 'Student not validation',
+//     //     data: error.details,
+//     //   });
+//     // }
 
-    // send response
-    res.status(200).json({
-      success: true,
-      message: 'Student is created sucessfully',
-      data: result,
-    });
-  } catch (error) {
-    // return error;
-    console.log(error);
-  }
-};
+//     // zod library validation checking
+//     const zodParseData = studentZodSchema.parse(studentData);
 
-const getAllStudents = async (req: Request, res: Response) => {
-  try {
-    const result = await StudentServices.getAllStudentIntoDB();
-    // console.log(result);
-    res.status(200).json({
-      success: true,
-      message: 'student is recived seccessfully',
-      data: result,
-    });
-  } catch (error) {
-    // return error;
-    console.log(error);
-  }
-};
+//     // we call "service" funciton to send this data
+//     const result = await StudentServices.createStudentIntoDB(zodParseData);
 
-const getSingleStudent = async (req: Request, res: Response) => {
-  try {
-    const { studentId } = req.params;
-    const result = await StudentServices.getSingleStudentIntoDB(studentId);
-    res.status(200).json({
-      success: true,
-      message: 'student is recived successfull',
-      data: result,
-    });
-  } catch (error) {
-    // return error;
-    console.log(error);
-  }
-};
+//     // send response
+//     res.status(200).json({
+//       success: true,
+//       message: 'Student is created sucessfully',
+//       data: result,
+//     });
+//   } catch (error) {
+//     type N = {
+//       message: string;
+//     };
+
+//     res.status(200).json({
+//       success: true,
+//       message: (error as N).message || 'something went wrong',
+//       error: error,
+//     });
+//   }
+// };
+
+
+// ues higher order funciton
+const getAllStudents = catchAsync(async (req, res) => {
+  const result = await StudentServices.getAllStudentIntoDB();
+  // console.log(result);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'student is recived successfull',
+    data: result,
+  });
+});
+
+const getSingleStudent = catchAsync(async (req, res) => {
+  const { studentId } = req.params;               
+  const result = await StudentServices.getSingleStudentIntoDB(studentId);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'student is recived successfull',
+    data: result,
+  });
+});
+
+const deleteStudent = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await StudentServices.deleteStudentDB(id);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'student is delete successfull',
+    data: result,
+  });
+});
 
 export const StudentController = {
-  createStudent,
   getAllStudents,
   getSingleStudent,
+  deleteStudent,
 };
