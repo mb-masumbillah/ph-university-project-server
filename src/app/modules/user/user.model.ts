@@ -39,7 +39,7 @@ const userSchema = new Schema<TUser>(
 );
 
 // <-------------pre save middleware / hook -------------->
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function ( next) {
   // console.log(this, 'pre hook : we will save to data');
 
   // hasing password save into DB
@@ -53,6 +53,7 @@ userSchema.pre('save', async function (next) {
 
   next();
 });
+
 
 // <----------------- post  save middleware / hook ---------------->
 // set " " ofter saving password

@@ -1,4 +1,3 @@
-
 import { userService } from './user.service';
 import sendResponse from '../../../utils/sendResponse';
 import catchAsync from '../../../utils/catchAsync';

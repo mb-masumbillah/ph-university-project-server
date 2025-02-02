@@ -46,8 +46,8 @@ import { StatusCodes } from 'http-status-codes';
 //   }
 // };
 
-
 // ues higher order funciton
+
 const getAllStudents = catchAsync(async (req, res) => {
   const result = await StudentServices.getAllStudentIntoDB();
   // console.log(result);
@@ -60,7 +60,7 @@ const getAllStudents = catchAsync(async (req, res) => {
 });
 
 const getSingleStudent = catchAsync(async (req, res) => {
-  const { studentId } = req.params;               
+  const { studentId } = req.params;
   const result = await StudentServices.getSingleStudentIntoDB(studentId);
 
   sendResponse(res, {
@@ -83,8 +83,22 @@ const deleteStudent = catchAsync(async (req, res) => {
   });
 });
 
+const updateStudent = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+  const result = await StudentServices.updateStudentIntoDB(id, data);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'student is update successfull',
+    data: result,
+  });
+});
+
 export const StudentController = {
   getAllStudents,
   getSingleStudent,
   deleteStudent,
+  updateStudent,
 };

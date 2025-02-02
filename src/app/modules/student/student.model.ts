@@ -168,9 +168,9 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       ref: 'AcademicSemester',
       required: true,
     },
-    academicDepartment:{
+    academicDepartment: {
       type: Schema.Types.ObjectId,
-      ref: "AcademicDepartment"
+      ref: 'AcademicDepartment',
     },
     isDelete: {
       type: Boolean,
@@ -229,6 +229,7 @@ studentSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { isDelete: { $ne: true } } });
   next();
 });
+
 
 // <-----------------for static method ------------------->
 studentSchema.statics.isUserExists = async function (id) {

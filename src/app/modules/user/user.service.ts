@@ -11,6 +11,12 @@ import { generateStudentId } from './user.utils';
 import mongoose from 'mongoose';
 
 const createUserIntoDB = async (password: string, payload: TStudent) => {
+
+  const isExistUser = await Student.findOne({ email: payload?.email });
+  if (isExistUser) {
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Student data is Exist');
+  }
+
   //   const user: NewUser = {};
   const userData: Partial<TUser> = {};
 
@@ -58,9 +64,11 @@ const createUserIntoDB = async (password: string, payload: TStudent) => {
     await session.endSession();
 
     return newStudent;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
+    throw new Error("Failed to create student")
   }
 };
 
