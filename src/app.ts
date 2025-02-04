@@ -14,7 +14,8 @@ app.use(cors());
 app.use('/api/v1', router);
 
 
-app.get('/', (_req: Request, res: Response) => {
+app.get('/', async(_req: Request, res: Response) => {
+  // Promise.reject() // test server off asynchronous
   res.send('project 2 server');
 });
 

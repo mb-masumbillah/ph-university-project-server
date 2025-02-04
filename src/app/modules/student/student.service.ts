@@ -6,6 +6,8 @@ import { AppError } from '../../Error/AppError';
 import { StatusCodes } from 'http-status-codes';
 import { User } from '../user/user.model';
 import { TStudent } from './student.interface';
+import QueryBuilder from '../../Builder/QueryBuilder';
+import { searchFields } from './student.constant';
 
 // const createStudentIntoDB = async (studentData: TStudent) => {
 //   // <-----------build in static method ------------->
@@ -28,15 +30,82 @@ import { TStudent } from './student.interface';
 //   return result;
 // };
 
-const getAllStudentIntoDB = async () => {
-  const result = await Student.find()
-    .populate('admissionSemester')
-    .populate({
-      path: 'academicDepartment',
-      populate: {
-        path: 'academicFaculty',
-      },
-    });
+const getAllStudentIntoDB = async (query: Record<string, unknown>) => {
+  // const objQuery = { ...query };
+
+  // // searching
+  // let searchTerm = '';
+  // if (query?.searchTerm) {
+  //   searchTerm = query?.searchTerm as string;
+  // }
+  // const searchFields = ['email', 'name.firstName', 'presentAddress'];
+
+  // const searchQuery = Student.find({
+  //   $or: searchFields.map((field) => ({
+  //     [field]: { $regex: searchTerm, $options: 'i' },
+  //   })),
+  // });
+
+  // // filtering
+  // const excludeFields = ['searchTerm', 'sort', 'page', 'limit', 'fields'];
+  // excludeFields.forEach((el) => delete objQuery[el]);
+
+  // // console.log({ query }, { objQuery });
+
+  // const filterQuery = searchQuery
+  //   .find(objQuery)
+  //   .populate('admissionSemester')
+  //   .populate({
+  //     path: 'academicDepartment',
+  //     populate: {
+  //       path: 'academicFaculty',
+  //     },
+  //   });
+
+  // // sorting
+  // let sort = '-createAt';
+  // if (query?.sort) {
+  //   sort = query?.sort as string;
+  // }
+  // const sortQuery = filterQuery.sort(sort);
+
+  // // limiting - pagination - skip
+  // let limit = 1;
+  // let page = 1;
+  // let skip = 0;
+
+  // if (query?.limit) {
+  //   limit = Number(query?.limit) as number;
+  // }
+  // if (query?.page) {
+  //   page = Number(query?.page);
+  //   skip = Number(page - 1) * limit;
+  // }
+  // // console.log({ skip }, { page }, { limit });
+
+  // const paginationQuery = sortQuery.skip(skip);
+  // const limitQuery = paginationQuery.limit(limit);
+
+  // // field limiting
+  // let fields = '-__v';
+
+  // if (query?.fields) {
+  //   fields = (query?.fields as string).split(',').join(' ');
+  // }
+
+  // const fieldsQuery = await limitQuery.select(fields);
+
+  // return fieldsQuery;
+
+  // উপরের সব comment গুলার জন্য আমরা একটা class বানাইছি সেখানে সব গুলার কাজ করে পুরো code কে কমায় নিয়ে আসছি ।
+
+  const studentQuery = new QueryBuilder(Student.find(), query)
+    .search(searchFields)
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+  const result = await studentQuery.modelQuery;
   return result;
 };
 
@@ -130,7 +199,7 @@ const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {
 
   const result = await Student.findOneAndUpdate({ id }, modifiedUpdateData, {
     new: true,
-    runValidators: true
+    runValidators: true,
   });
   return result;
 };

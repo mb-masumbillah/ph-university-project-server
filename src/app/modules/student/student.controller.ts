@@ -49,7 +49,7 @@ import { StatusCodes } from 'http-status-codes';
 // ues higher order funciton
 
 const getAllStudents = catchAsync(async (req, res) => {
-  const result = await StudentServices.getAllStudentIntoDB();
+  const result = await StudentServices.getAllStudentIntoDB(req.query);
   // console.log(result);
   sendResponse(res, {
     statusCode: StatusCodes.OK,

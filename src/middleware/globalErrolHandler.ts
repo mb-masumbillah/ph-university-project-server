@@ -9,6 +9,7 @@ import handleZodError from '../app/Error/HandleValidationZodError_1';
 import handleValidationError from '../app/Error/HandleValidationMongooseError_2';
 import handleConstError from '../app/Error/HandleMongooesCastError_3';
 import handleDuplicateError from '../app/Error/handleDuplicateError';
+import { AppError } from '../app/Error/AppError';
 
 const globalErrorHandler: ErrorRequestHandler = (
   error,
@@ -16,8 +17,8 @@ const globalErrorHandler: ErrorRequestHandler = (
   res,
   next,
 ): void => {
-  let statusCode = error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
-  let message = error.message || 'something went wrong';
+  let statusCode = 500;
+  let message = 'something went wrong';
 
   let errorSources: TErrorSources = [
     {
@@ -46,6 +47,24 @@ const globalErrorHandler: ErrorRequestHandler = (
     statusCode = simplifiedError.statusCode;
     message = simplifiedError.message;
     errorSources = simplifiedError.errorSources;
+  } else if (error instanceof AppError) {
+    statusCode = error.statusCode;
+    message = error?.message;
+    errorSources = [
+      {
+        path: '',
+        message: error?.message,
+      },
+    ];
+    
+  } else if (error instanceof Error) {
+    message = error.message;
+    errorSources = [
+      {
+        path: '',
+        message: error?.message,
+      },
+    ];
   }
 
   res.status(statusCode).json({

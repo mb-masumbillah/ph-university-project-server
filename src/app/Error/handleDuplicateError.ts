@@ -8,7 +8,7 @@ const handleDuplicateError = (error: any): TGenericErrorResponse => {
   const extracted_msg = match && match[1];
   const errorSources : TErrorSources = [
     {
-      path: '',
+      path: "",
       message: `/${extracted_msg}/ is exist`,
     },
   ];
