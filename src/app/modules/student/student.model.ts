@@ -232,7 +232,7 @@ studentSchema.pre('aggregate', function (next) {
 
 // <-----------------for static method ------------------->
 studentSchema.statics.isUserExists = async function (id) {
-  const existUser = await Student.findOne({ id });
+  const existUser = await Student.findOne(id);
   return existUser;
 };
 

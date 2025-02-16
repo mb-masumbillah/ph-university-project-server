@@ -31,6 +31,8 @@ import { searchFields } from './student.constant';
 // };
 
 const getAllStudentIntoDB = async (query: Record<string, unknown>) => {
+  // এই খানে mongoose and condition use করে search,fields,sort,pagination কাজ করা হয়েছে ।
+
   // const objQuery = { ...query };
 
   // // searching
@@ -99,7 +101,18 @@ const getAllStudentIntoDB = async (query: Record<string, unknown>) => {
 
   // উপরের সব comment গুলার জন্য আমরা একটা class বানাইছি সেখানে সব গুলার কাজ করে পুরো code কে কমায় নিয়ে আসছি ।
 
-  const studentQuery = new QueryBuilder(Student.find(), query)
+  // এই খানে class use করে sort,search,filter,pagination fields এর কাজ করা হয়েছে ।
+  const studentQuery = new QueryBuilder(
+    Student.find()
+      .populate('admissionSemester')
+      .populate({
+        path: 'academicDepartment',
+        populate: {
+          path: 'academicFaculty',
+        },
+      }),
+    query,
+  )
     .search(searchFields)
     .filter()
     .sort()
@@ -114,10 +127,11 @@ const getSingleStudentIntoDB = async (id: string) => {
   //   id: id,
   // };
 
-  // const result = await Student.findOne(studentId);
+  // const result = await Student.findById(studentId);
 
   // const result = await Student.aggregate([{ $match: { id: studentId.id } }]);
-  const result = await Student.findOne({ id: id })
+
+  const result = await Student.findById(id)
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
@@ -129,7 +143,7 @@ const getSingleStudentIntoDB = async (id: string) => {
 };
 
 const deleteStudentDB = async (id: string) => {
-  const isExistStudent = await Student.findOne({ id: id });
+  const isExistStudent = await Student.findById(id);
   if (!isExistStudent) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'student data is not Exist');
   }
@@ -139,8 +153,8 @@ const deleteStudentDB = async (id: string) => {
   try {
     session.startTransaction();
 
-    const deleteStudent = await Student.findOneAndUpdate(
-      { id },
+    const deleteStudent = await Student.findByIdAndUpdate(
+      id,
       { isDelete: true },
       { new: true, session },
     );
@@ -149,8 +163,8 @@ const deleteStudentDB = async (id: string) => {
       throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to delete Student');
     }
 
-    const deleteUser = await User.findOneAndUpdate(
-      { id },
+    const deleteUser = await User.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session },
     );
@@ -197,7 +211,7 @@ const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {
     }
   }
 
-  const result = await Student.findOneAndUpdate({ id }, modifiedUpdateData, {
+  const result = await Student.findByIdAndUpdate(id, modifiedUpdateData, {
     new: true,
     runValidators: true,
   });

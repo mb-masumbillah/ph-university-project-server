@@ -35,7 +35,8 @@ class QueryBuilder<T> {
 
   // sorting
   sort() {
-    const sort = this?.query.sort || '-createAt';
+    const sort =
+      (this?.query?.sort as string)?.split(',')?.join(' ') || '-createAt';
     this.modelQuery = this.modelQuery.sort(sort as string);
     return this;
   }
@@ -53,7 +54,8 @@ class QueryBuilder<T> {
 
   // fields
   fields() {
-    const fields = (this?.query?.fields as string)?.split(',')?.join(' ') || '-__v';
+    const fields =
+      (this?.query?.fields as string)?.split(',')?.join(' ') || '-__v';
 
     this.modelQuery = this.modelQuery.select(fields);
 
@@ -61,4 +63,4 @@ class QueryBuilder<T> {
   }
 }
 
-export default QueryBuilder
+export default QueryBuilder;

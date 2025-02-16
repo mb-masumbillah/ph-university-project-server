@@ -11,7 +11,7 @@ const academicSemesterNameCodeMapper = {
 
 const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
   if (academicSemesterNameCodeMapper[payload.name] !== payload.code) {
-    throw new AppError(StatusCodes.NOT_FOUND,'Invalid Semester Code');
+    throw new AppError(StatusCodes.NOT_FOUND, 'Invalid Semester Code');
   }
 
   const result = await AcademicSemester.create(payload);
@@ -37,7 +37,7 @@ const updateAcademicSemesterIntoDB = async (
     payload.code &&
     academicSemesterNameCodeMapper[payload.name] !== payload.code
   ) {
-    throw new AppError(StatusCodes.NOT_FOUND,'Invalid Semester Code');
+    throw new AppError(StatusCodes.NOT_FOUND, 'Invalid Semester Code');
   }
   const result = await AcademicSemester.findByIdAndUpdate(id, payload, {
     new: true,

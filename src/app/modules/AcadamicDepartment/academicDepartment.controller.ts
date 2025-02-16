@@ -27,7 +27,7 @@ const getAllAcademicDepartment = catchAsync(async (req, res) => {
 });
 
 const getSingleAcademicDepartment = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const result =
     await academicDepartmentService.getSingleAcademicDepartmentIntoDB(id);
   sendResponse(res, {
@@ -38,7 +38,7 @@ const getSingleAcademicDepartment = catchAsync(async (req, res) => {
   });
 });
 const updateAcademicDepartment = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  const {id} = req.params;
   const query = req.body;
   const result = await academicDepartmentService.updateAcademicDepartmentIntoDB(
     id,

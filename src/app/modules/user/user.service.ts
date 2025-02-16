@@ -11,7 +11,6 @@ import { generateStudentId } from './user.utils';
 import mongoose from 'mongoose';
 
 const createUserIntoDB = async (password: string, payload: TStudent) => {
-
   const isExistUser = await Student.findOne({ email: payload?.email });
   if (isExistUser) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'Student data is Exist');
@@ -30,7 +29,7 @@ const createUserIntoDB = async (password: string, payload: TStudent) => {
   // userData.id = '2030100001';
 
   const academicSemester: TAcademicSemester | null =
-    await AcademicSemester.findById(payload.admissionSemester);
+    await AcademicSemester.findOne(payload.admissionSemester);
 
   if (academicSemester === null) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Academic semester not found');
@@ -68,7 +67,7 @@ const createUserIntoDB = async (password: string, payload: TStudent) => {
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-    throw new Error("Failed to create student")
+    throw new Error('Failed to create student');
   }
 };
 

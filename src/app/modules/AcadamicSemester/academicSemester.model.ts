@@ -47,7 +47,7 @@ academicSemesterSchema.pre('save', async function (next) {
   });
 
   if (isSemesterExists) {
-    throw new AppError(StatusCodes.NOT_FOUND,'Semester is Aready exists');
+    throw new AppError(StatusCodes.NOT_FOUND, 'Semester is Aready exists');
   }
 
   next();

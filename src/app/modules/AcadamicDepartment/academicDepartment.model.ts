@@ -36,11 +36,13 @@ academicDepartmentSchema.pre('save', async function (next) {
 
 academicDepartmentSchema.pre('findOneAndUpdate', async function (next) {
   const query = this.getQuery();
-
   // console.log(query._id)
   const isExistDepartment = await AcademicDepartment.findOne(query._id);
   if (!isExistDepartment) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'department dose not update because wrong id !');
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      'department dose not update because wrong id !',
+    );
   }
   next();
 });

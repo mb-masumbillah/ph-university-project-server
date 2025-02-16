@@ -29,7 +29,7 @@ academicFacultySchema.pre('findOneAndUpdate', async function (next) {
   if (isExistFaculty) {
     throw Error('Faculty dose not Update because wrong id !');
   }
-  next()
+  next();
 });
 
 export const AcademicFaculty = model<TAcademicFaculty>(

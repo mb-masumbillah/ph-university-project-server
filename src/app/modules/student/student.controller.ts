@@ -60,8 +60,9 @@ const getAllStudents = catchAsync(async (req, res) => {
 });
 
 const getSingleStudent = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
-  const result = await StudentServices.getSingleStudentIntoDB(studentId);
+  const { id } = req.params;
+
+  const result = await StudentServices.getSingleStudentIntoDB(id);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -73,6 +74,7 @@ const getSingleStudent = catchAsync(async (req, res) => {
 
 const deleteStudent = catchAsync(async (req, res) => {
   const { id } = req.params;
+
   const result = await StudentServices.deleteStudentDB(id);
 
   sendResponse(res, {
