@@ -6,6 +6,9 @@ import { academicFacultyRouters } from '../app/modules/academicFaculty/academicF
 import { academicDepartmentRoute } from '../app/modules/AcadamicDepartment/academicDepartment.route';
 import { CourseRouter } from '../app/modules/Course/course.route';
 import { FacultyRoutes } from '../app/modules/Faculty/faculty.route';
+import { AdminRouter } from '../app/modules/Admin/admin.route';
+import { SemesterRegister } from '../app/modules/semesterRegister/semsterRegister.router';
+import { offeredCourseRoutes } from '../app/modules/OfferedCourse/OfferedCourse.route';
 
 const router = Router();
 
@@ -23,6 +26,10 @@ const moudleRoutes = [
     route: FacultyRoutes,
   },
   {
+    path: '/admin',
+    route: AdminRouter,
+  },
+  {
     path: '/academic-semester',
     route: academicSemesterRouters,
   },
@@ -37,6 +44,14 @@ const moudleRoutes = [
   {
     path: '/course',
     route: CourseRouter,
+  },
+  {
+    path: '/semesterRegister',
+    route: SemesterRegister,
+  },
+  {
+    path: '/offered-course',
+    route: offeredCourseRoutes,
   },
 ];
 

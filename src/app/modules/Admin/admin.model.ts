@@ -1,7 +1,6 @@
-import { model, Schema } from "mongoose";
-import { FacultyModel, TFaculty, TUserName } from "./faculty.interface";
-import { BloodGroup, Gender } from "./faculty.constant";
-
+import { model, Schema } from 'mongoose';
+import { AdminModel, TAdmin, TUserName } from './admin.interface';
+import { BloodGroup, Gender } from './admin.constant';
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -22,7 +21,7 @@ const userNameSchema = new Schema<TUserName>({
   },
 });
 
-const facultySchema = new Schema<TFaculty, FacultyModel>(
+const AdminSchema = new Schema<TAdmin, AdminModel>(
   {
     id: {
       type: String,
@@ -78,11 +77,6 @@ const facultySchema = new Schema<TFaculty, FacultyModel>(
       required: [true, 'Permanent address is required'],
     },
     profileImg: { type: String },
-    academicDepartment: {
-      type: Schema.Types.ObjectId,
-      required: [true, 'User id is required'],
-      ref: 'User',
-    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -96,7 +90,7 @@ const facultySchema = new Schema<TFaculty, FacultyModel>(
 );
 
 // generating full name
-facultySchema.virtual('fullName').get(function () {
+AdminSchema.virtual('fullName').get(function () {
   return (
     this?.name?.firstName +
     '' +
@@ -107,25 +101,25 @@ facultySchema.virtual('fullName').get(function () {
 });
 
 // filter out deleted documents
-facultySchema.pre('find', function (next) {
+AdminSchema.pre('find', function (next) {
   this.find({ isDeleted: { $ne: true } });
   next();
 });
 
-facultySchema.pre('findOne', function (next) {
+AdminSchema.pre('findOne', function (next) {
   this.find({ isDeleted: { $ne: true } });
   next();
 });
 
-facultySchema.pre('aggregate', function (next) {
+AdminSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
   next();
 });
 
 //checking if user is already exist!
-facultySchema.statics.isUserExists = async function (id: string) {
-  const existingUser = await Faculty.findOne({ id });
+AdminSchema.statics.isUserExists = async function (id: string) {
+  const existingUser = await Admin.findOne({ id });
   return existingUser;
 };
 
-export const Faculty = model<TFaculty, FacultyModel>('Faculty', facultySchema);
+export const Admin = model<TAdmin, AdminModel>('Admin', AdminSchema);
