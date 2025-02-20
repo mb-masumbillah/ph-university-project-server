@@ -19,7 +19,7 @@ const loginUser = async (payload: TLoginUser) => {
   }
 
   // checking if the user is blocked
-  const userStatus = user?.status
+  const userStatus = user?.status;
 
   if (userStatus === 'blocked') {
     throw new AppError(StatusCodes.FORBIDDEN, 'This user is blocked ! !');
@@ -27,7 +27,9 @@ const loginUser = async (payload: TLoginUser) => {
 
   //checking if the password is correct
 
-  
+  if (!(await User.isPasswordMatched(payload?.password, user?.password))) {
+    throw new AppError(StatusCodes.FORBIDDEN, 'Password do not matched');
+  }
 };
 
 export const AuthServices = {
