@@ -3,6 +3,7 @@ import { AppError } from '../app/Error/AppError';
 import catchAsync from '../utils/catchAsync';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../app/config';
+import { TuserRole } from '../app/modules/user/user.interface';
 
 /* 
     আমি যদি এই interface এ customRequest বানাই তাহলে এই customRequest টাকে catchAsync এর মধ্যে req:Request এর জায়গায়  req:customRequest দিতে হবে । তাই interface folder এ আমরা index.d.ts নামে file এ declare global এ user টাকে req এর ভিতরে  add করে দিছি ।  আমরা এখন যে কোনো controller এ req.user লিখে console.log(req.user) করি তাহলে আমরা এই jwt এর decoded এ থাকা data টা পেয়ে যাবো । 
@@ -12,7 +13,7 @@ import config from '../app/config';
 //   user: JwtPayload;
 // }
 
-export const auth = () => {
+export const auth = (...requredRoles: TuserRole[]) => {
   return catchAsync(async (req, res, next) => {
     const token = req.headers.authorization;
 
@@ -33,8 +34,17 @@ export const auth = () => {
           );
         }
 
+        const role = (decoded as JwtPayload)?.role;
+
+        if (requredRoles && !requredRoles.includes(role)) {
+          throw new AppError(
+            StatusCodes.UNAUTHORIZED,
+            'You are not Authorized',
+          );
+        }
+
         req.user = decoded as JwtPayload;
-        
+
         next();
       },
     );

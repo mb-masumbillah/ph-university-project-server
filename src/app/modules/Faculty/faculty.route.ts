@@ -3,6 +3,7 @@ import { FacultyControllers } from './faculty.controller';
 import { updateFacultyValidationSchema } from './factuly.validation';
 import validationRequest from '../../../middleware/validationRequest';
 import { auth } from '../../../middleware/auth';
+import { USER_ROLE } from '../user/user.contatnt';
 
 const router = Router();
 
@@ -16,6 +17,6 @@ router.patch(
 
 router.delete('/:id', FacultyControllers.deleteFaculty);
 
-router.get('/', auth(), FacultyControllers.getAllFaculties);
+router.get('/', auth(USER_ROLE.admin), FacultyControllers.getAllFaculties);
 
 export const FacultyRoutes = router;
