@@ -1,7 +1,8 @@
-import { Router } from "express";
-import { FacultyControllers } from "./faculty.controller";
-import { updateFacultyValidationSchema } from "./factuly.validation";
-import validationRequest from "../../../middleware/validationRequest";
+import { Router } from 'express';
+import { FacultyControllers } from './faculty.controller';
+import { updateFacultyValidationSchema } from './factuly.validation';
+import validationRequest from '../../../middleware/validationRequest';
+import { auth } from '../../../middleware/auth';
 
 const router = Router();
 
@@ -15,6 +16,6 @@ router.patch(
 
 router.delete('/:id', FacultyControllers.deleteFaculty);
 
-router.get('/', FacultyControllers.getAllFaculties);
+router.get('/', auth(), FacultyControllers.getAllFaculties);
 
 export const FacultyRoutes = router;

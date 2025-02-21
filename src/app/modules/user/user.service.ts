@@ -38,7 +38,7 @@ const createUserIntoDB = async (password: string, payload: TStudent) => {
   // userData.id = '2030100001';
 
   const academicSemester: TAcademicSemester | null =
-    await AcademicSemester.findOne(payload.admissionSemester);
+    await AcademicSemester.findById(payload.admissionSemester);
 
   if (academicSemester === null) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Academic semester not found');
