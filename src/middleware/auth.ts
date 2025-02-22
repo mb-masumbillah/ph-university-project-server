@@ -4,6 +4,7 @@ import catchAsync from '../utils/catchAsync';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../app/config';
 import { TuserRole } from '../app/modules/user/user.interface';
+import { User } from '../app/modules/user/user.model';
 
 /* 
     আমি যদি এই interface এ customRequest বানাই তাহলে এই customRequest টাকে catchAsync এর মধ্যে req:Request এর জায়গায়  req:customRequest দিতে হবে । তাই interface folder এ আমরা index.d.ts নামে file এ declare global এ user টাকে req এর ভিতরে  add করে দিছি ।  আমরা এখন যে কোনো controller এ req.user লিখে console.log(req.user) করি তাহলে আমরা এই jwt এর decoded এ থাকা data টা পেয়ে যাবো । 
@@ -22,31 +23,77 @@ export const auth = (...requredRoles: TuserRole[]) => {
       throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not Authorized');
     }
 
-    // check if the token is valid
-    jwt.verify(
+    // check if the token is valid - system - 1
+    // jwt.verify(
+    //   token,
+    //   config.jwt_access_secret as string,
+    //   function (err, decoded) {
+    //     if (err) {
+    //       throw new AppError(
+    //         StatusCodes.UNAUTHORIZED,
+    //         'You are not Authorized',
+    //       );
+    //     }
+
+    //     const role = (decoded as JwtPayload)?.role;
+
+    //     if (requredRoles && !requredRoles.includes(role)) {
+    //       throw new AppError(
+    //         StatusCodes.UNAUTHORIZED,
+    //         'You are not Authorized',
+    //       );
+    //     }
+
+    //     req.user = decoded as JwtPayload;
+
+    //     next();
+    //   },
+    // );
+
+    // check if the token is valid - system - 2
+    const decoded = jwt.verify(
       token,
       config.jwt_access_secret as string,
-      function (err, decoded) {
-        if (err) {
-          throw new AppError(
-            StatusCodes.UNAUTHORIZED,
-            'You are not Authorized',
-          );
-        }
+    ) as JwtPayload;
 
-        const role = (decoded as JwtPayload)?.role;
+    const { role, userId, iat } = decoded;
 
-        if (requredRoles && !requredRoles.includes(role)) {
-          throw new AppError(
-            StatusCodes.UNAUTHORIZED,
-            'You are not Authorized',
-          );
-        }
+    // checking if the user is exist
+    const user = await User.isUserExistsByCustomID(userId);
 
-        req.user = decoded as JwtPayload;
+    if (!user) {
+      throw new AppError(StatusCodes.NOT_FOUND, 'This userr is not found');
+    }
 
-        next();
-      },
-    );
+    // checking if the use is already deleted
+
+    const isDeleted = user?.isDeleted;
+    if (isDeleted) {
+      throw new AppError(StatusCodes.FORBIDDEN, 'This user is deleted');
+    }
+    // checking if the user is blocked
+    const userStatus = user?.status;
+    if (!userStatus) {
+      throw new AppError(StatusCodes.FORBIDDEN, 'This user is blocked');
+    }
+
+    // token change
+    if (
+      user.passwordChangedAt &&
+      User.isJWTIssuedBeforePasswordChanged(
+        user.passwordChangedAt,
+        iat as number,
+      )
+    ) {
+      throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not Authorized');
+    }
+
+    // role checking
+    if (requredRoles && !requredRoles.includes(role)) {
+      throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not Authorized');
+    }
+    req.user = decoded as JwtPayload;
+
+    next();
   });
 };

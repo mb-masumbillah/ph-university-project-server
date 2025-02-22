@@ -104,6 +104,7 @@ const getAllStudentIntoDB = async (query: Record<string, unknown>) => {
   // এই খানে class use করে sort,search,filter,pagination fields এর কাজ করা হয়েছে ।
   const studentQuery = new QueryBuilder(
     Student.find()
+      .populate('user')
       .populate('admissionSemester')
       .populate({
         path: 'academicDepartment',
@@ -132,6 +133,7 @@ const getSingleStudentIntoDB = async (id: string) => {
   // const result = await Student.aggregate([{ $match: { id: studentId.id } }]);
 
   const result = await Student.findById(id)
+    .populate('user')
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
