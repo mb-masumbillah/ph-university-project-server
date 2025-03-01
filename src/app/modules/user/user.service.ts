@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { StatusCodes } from 'http-status-codes';
 import config from '../../config';
 import { AppError } from '../../Error/AppError';
@@ -18,8 +19,13 @@ import { AcademicDepartment } from '../AcadamicDepartment/academicDepartment.mod
 import { TFaculty } from '../Faculty/faculty.interface';
 import { TAdmin } from '../Admin/admin.interface';
 import { Admin } from '../Admin/admin.model';
+import { sendImageToCloudinary } from '../../../utils/sendImageToCloudinary';
 
-const createUserIntoDB = async (password: string, payload: TStudent) => {
+const createUserIntoDB = async (
+  file: any,
+  password: string,
+  payload: TStudent,
+) => {
   const isExistUser = await Student.findOne({ email: payload?.email });
   if (isExistUser) {
     throw new AppError(StatusCodes.BAD_REQUEST, 'Student data is Exist');
@@ -33,6 +39,7 @@ const createUserIntoDB = async (password: string, payload: TStudent) => {
 
   // set Student role
   userData.role = 'student';
+  userData.email = payload?.email;
 
   // manually generate id
   // userData.id = '2030100001';
@@ -50,6 +57,14 @@ const createUserIntoDB = async (password: string, payload: TStudent) => {
     session.startTransaction();
     userData.id = await generateStudentId(academicSemester);
 
+
+    const imageName = `${userData?.id} ${userData?.role}`;
+
+    const { secure_url }: any = await sendImageToCloudinary(
+      imageName,
+      file?.path,
+    );
+
     // create user (transaction-1)
     const newUser = await User.create([userData], { session }); // befor was object but now it arrary
 
@@ -60,6 +75,7 @@ const createUserIntoDB = async (password: string, payload: TStudent) => {
     //set id , _id as  userData
     payload.id = newUser[0].id; // embeding id
     payload.user = newUser[0]._id; // reference _id
+    payload.profileImg = secure_url;
 
     // create user (transaction-2)
     const newStudent = await Student.create([payload], { session });
@@ -89,6 +105,7 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
 
   //set student role
   userData.role = 'faculty';
+  userData.email = payload?.email;
 
   // find academic department info
   const academicDepartment = await AcademicDepartment.findById(
@@ -144,6 +161,7 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
 
   userData.password = password || config.default_pass;
   userData.role = 'admin';
+  userData.email = payload?.email;
 
   const session = await mongoose.startSession();
 
@@ -169,7 +187,7 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
     await session.commitTransaction();
     await session.endSession();
 
-    return newAdmin
+    return newAdmin;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     await session.abortTransaction();

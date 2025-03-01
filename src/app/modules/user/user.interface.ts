@@ -5,6 +5,7 @@ import { USER_ROLE } from './user.contatnt';
 export interface TUser {
   id: string;
   password: string;
+  email: string,
   needsPasswordChange: boolean;
   role: 'admin' | 'student' | 'faculty';
   status: 'in-progress' | 'blocked';

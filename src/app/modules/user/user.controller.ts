@@ -8,7 +8,11 @@ const createUser = catchAsync(async (req, res) => {
   const { password, student: studentData } = req.body;
 
   // we call "service" funciton to send this data
-  const result = await userService.createUserIntoDB(password, studentData);
+  const result = await userService.createUserIntoDB(
+    req.file,
+    password,
+    studentData,
+  );
 
   // send response
   sendResponse(res, {
@@ -37,7 +41,7 @@ const createAdmin = catchAsync(async (req, res) => {
 
   const result = await userService.createAdminIntoDB(password, adminData);
 
-  console.log(result)
+  console.log(result);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -50,5 +54,5 @@ const createAdmin = catchAsync(async (req, res) => {
 export const userController = {
   createUser,
   createFaculty,
-  createAdmin
+  createAdmin,
 };
