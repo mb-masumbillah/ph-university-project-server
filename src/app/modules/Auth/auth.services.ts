@@ -194,7 +194,7 @@ const forgetPasswordService = async (id: string) => {
 
   sendEmail(user?.email, resetUILink);
 
-  console.log(resetUILink);
+  // console.log(resetUILink);
 };
 
 const resetPasswordService = async (

@@ -41,8 +41,6 @@ const createAdmin = catchAsync(async (req, res) => {
 
   const result = await userService.createAdminIntoDB(password, adminData);
 
-  console.log(result);
-
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
