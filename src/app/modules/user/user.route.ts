@@ -9,6 +9,7 @@ import { createAdminValidationSchema } from '../Admin/admin.validation';
 import { auth } from '../../../middleware/auth';
 import { USER_ROLE } from './user.contatnt';
 import { upload } from '../../../utils/sendImageToCloudinary';
+import { userValidation } from './user.zod.validation';
 
 const router = express.Router();
 
@@ -35,6 +36,15 @@ router.post(
   '/create-admin',
   validationRequest(createAdminValidationSchema),
   userController.createAdmin,
+);
+
+router.get('/me', auth('student', 'faculty', 'admin'), userController.getMe);
+
+router.post(
+  '/change-status/:id',
+  auth('admin'),
+  validationRequest(userValidation.changeStatusValidationSchema),
+  userController.changeStatus,
 );
 
 export const UserRoute = router;
