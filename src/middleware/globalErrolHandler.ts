@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ErrorRequestHandler } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { ZodError, ZodIssue } from 'zod';
+import { ZodError } from 'zod';
 import { TErrorSources } from '../app/interface/global_interface';
 import config from '../app/config';
 import handleZodError from '../app/Error/HandleValidationZodError_1';

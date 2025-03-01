@@ -7,7 +7,7 @@ const validationRequest = (schema: AnyZodObject) => {
     // if everything all right next()
     // zod library validation checking
 
-    await schema.parseAsync({ body: req.body });
+    await schema.parseAsync({ body: req.body, cookies: req.cookies });
     next();
   });
 };
