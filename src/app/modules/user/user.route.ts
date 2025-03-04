@@ -9,7 +9,7 @@ import { createAdminValidationSchema } from '../Admin/admin.validation';
 import { auth } from '../../../middleware/auth';
 import { USER_ROLE } from './user.contatnt';
 import { upload } from '../../../utils/sendImageToCloudinary';
-import { UserValidation} from './user.zod.validation';
+import { UserValidation } from './user.zod.validation';
 
 const router = express.Router();
 
@@ -67,6 +67,5 @@ router.get(
   ),
   userController.getMe,
 );
-
 
 export const UserRoute = router;
