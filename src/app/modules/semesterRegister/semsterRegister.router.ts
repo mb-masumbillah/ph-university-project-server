@@ -3,6 +3,7 @@ import { semesterRegisterController } from './semesterRegister.controller';
 import validationRequest from '../../../middleware/validationRequest';
 import { SemesterRegistrationValidations } from './semesterRegister.validation';
 import { USER_ROLE } from '../user/user.contatnt';
+import { auth } from '../../../middleware/auth';
 
 const router = Router();
 
