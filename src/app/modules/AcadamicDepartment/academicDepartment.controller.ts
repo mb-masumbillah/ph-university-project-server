@@ -16,18 +16,20 @@ const createAcademicDepartment = catchAsync(async (req, res) => {
 });
 
 const getAllAcademicDepartment = catchAsync(async (req, res) => {
-  const result =
-    await academicDepartmentService.getAllAcademicDepartmentIntoDB();
+  const result = await academicDepartmentService.getAllAcademicDepartmentIntoDB(
+    req.query,
+  );
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'academic department successfull',
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 
 const getSingleAcademicDepartment = catchAsync(async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   const result =
     await academicDepartmentService.getSingleAcademicDepartmentIntoDB(id);
   sendResponse(res, {
@@ -38,7 +40,7 @@ const getSingleAcademicDepartment = catchAsync(async (req, res) => {
   });
 });
 const updateAcademicDepartment = catchAsync(async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   const query = req.body;
   const result = await academicDepartmentService.updateAcademicDepartmentIntoDB(
     id,

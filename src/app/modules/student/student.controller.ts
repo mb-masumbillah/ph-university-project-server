@@ -50,7 +50,7 @@ import { StatusCodes } from 'http-status-codes';
 
 const getAllStudents = catchAsync(async (req, res) => {
   const result = await StudentServices.getAllStudentIntoDB(req.query);
-  console.log(req.cookies);
+  // console.log(req.cookies);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
