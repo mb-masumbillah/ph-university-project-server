@@ -84,7 +84,7 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
     type: String,
     required: [true, 'Local guardian name is required.'],
   },
-  contact: {
+  contactNo: {
     type: String,
     required: [true, 'Local guardian contact is required.'],
   },
@@ -162,7 +162,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: localGuardianSchema,
       required: [true, 'Local guardian information is required.'],
     },
-    profileImg: { type: String },
+    profileImg: { type: String , default: ""},
     admissionSemester: {
       type: Schema.Types.ObjectId,
       ref: 'AcademicSemester',
