@@ -47,7 +47,7 @@ router.post(
     next();
   },
   validationRequest(createAdminValidationSchema),
-  UserControllers.createAdmin,
+  userController.createAdmin,
 );
 
 router.post(
