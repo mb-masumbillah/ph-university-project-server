@@ -24,7 +24,7 @@ router.get(
     USER_ROLE.faculty,
     USER_ROLE.student,
   ),
-  SemesterRegistrationController.getSingleSemesterRegistration,
+  semesterRegisterController.getSingleSemesterRegister,
 );
 
 router.patch(
