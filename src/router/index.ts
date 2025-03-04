@@ -10,6 +10,7 @@ import { AdminRouter } from '../app/modules/Admin/admin.route';
 import { SemesterRegister } from '../app/modules/semesterRegister/semsterRegister.router';
 import { offeredCourseRoutes } from '../app/modules/OfferedCourse/OfferedCourse.route';
 import { AuthRoutes } from '../app/modules/Auth/auth.route';
+import { EnrolledCourseRoutes } from '../app/modules/EnrolledCourse/enrolledCourse.route';
 
 const router = Router();
 
@@ -58,6 +59,10 @@ const moudleRoutes = [
     path: '/auth',
     route: AuthRoutes ,
   },
+  {
+    path: "/enrolled-courses",
+    route: EnrolledCourseRoutes
+  }
 ];
 
 moudleRoutes.forEach((route) => router.use(route?.path, route?.route));

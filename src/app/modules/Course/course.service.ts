@@ -21,7 +21,11 @@ const getAllCoursesFromDB = async (query: Record<string, unknown>) => {
     .pagination()
     .fields();
   const result = await courseQuery.modelQuery;
-  return result;
+  const meta = await courseQuery.countTotal();
+  return {
+    result,
+    meta,
+  };
 };
 const getSingleCoursesFromDB = async (id: string) => {
   const result = await Course.findById(id);

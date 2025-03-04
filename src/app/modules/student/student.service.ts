@@ -120,7 +120,11 @@ const getAllStudentIntoDB = async (query: Record<string, unknown>) => {
     .pagination()
     .fields();
   const result = await studentQuery.modelQuery;
-  return result;
+  const meta = await studentQuery.countTotal();
+  return {
+    result,
+    meta,
+  };
 };
 
 const getSingleStudentIntoDB = async (id: string) => {
