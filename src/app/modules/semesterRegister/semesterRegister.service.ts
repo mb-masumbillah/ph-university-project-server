@@ -6,6 +6,8 @@ import { TSemesterRegistration } from './semesterRegister.interface';
 import { SemesterRegistration } from './semesterRegister.model';
 import QueryBuilder from '../../Builder/QueryBuilder';
 import { RegistrationStatus } from './semesterRegister.constant';
+import { OfferedCourse } from '../OfferedCourse/OfferedCourse.model';
+import mongoose from 'mongoose';
 
 const createSemesterRegisterIntoDB = async (payload: TSemesterRegistration) => {
   /**
@@ -222,5 +224,6 @@ export const semesterRegisterServices = {
   createSemesterRegisterIntoDB,
   getAllSemesterRegistrationsFromDB,
   getSingleSemesterRegistrationsFromDB,
-  updateSemesterRegisterFromDB
+  updateSemesterRegisterFromDB,
+  deleteSemesterRegistrationFromDB
 };
