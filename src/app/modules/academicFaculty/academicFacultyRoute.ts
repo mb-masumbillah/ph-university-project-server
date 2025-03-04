@@ -2,20 +2,47 @@ import express from 'express';
 import { academicFacultyValidation } from './academic.faculty.validation';
 import validationRequest from '../../../middleware/validationRequest';
 import { academicFacultyControllers } from './academicFaculty.controller';
+import { USER_ROLE } from '../user/user.contatnt';
+import { auth } from '../../../middleware/auth';
 
 const router = express.Router();
 
 router.post(
-  '/create-academic-semester',
+  '/create-academic-faculty',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   validationRequest(academicFacultyValidation.AcademicFacultyValidationSchema),
   academicFacultyControllers.createAcademicFaculty,
 );
-router.get('/', academicFacultyControllers.getAllAcademicFaculty);
-router.get('/:id', academicFacultyControllers.getSingleAcademicFaculty);
+
+router.get(
+  '/:id',
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.faculty,
+    USER_ROLE.student,
+  ),
+  academicFacultyControllers.getSingleAcademicFaculty,
+);
+
 router.patch(
   '/:id',
-  validationRequest(academicFacultyValidation.AcademicFacultyValidationSchema),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  validationRequest(
+    academicFacultyValidation.UpdateAcademicFacultyValidationSchema,
+  ),
   academicFacultyControllers.updateAcademicFaculty,
+);
+
+router.get(
+  '/',
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.faculty,
+    USER_ROLE.student,
+  ),
+  academicFacultyControllers.getAllAcademicFaculty,
 );
 
 export const academicFacultyRouters = router;
