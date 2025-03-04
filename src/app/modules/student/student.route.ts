@@ -22,6 +22,12 @@ router.get(
   StudentController.getSingleStudent,
 );
 
+router.delete(
+  '/:id',
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  StudentController.deleteStudent,
+);
+
 router.patch(
   '/:id',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin),
@@ -29,10 +35,6 @@ router.patch(
   StudentController.updateStudent,
 );
 
-router.delete(
-  '/:id',
-  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
-  StudentController.deleteStudent,
-);
+
 
 export const StudentRoute = router;

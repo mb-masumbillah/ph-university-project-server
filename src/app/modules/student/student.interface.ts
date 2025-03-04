@@ -45,7 +45,7 @@ export type TStudent = {
   admissionSemester: Types.ObjectId;
   academicDepartment: Types.ObjectId;
   academicFaculty: Types.ObjectId;
-  isDelete: boolean;
+  isDeleted: boolean;
 };
 
 //  <---------------- create static  methods in this interface ----------------->

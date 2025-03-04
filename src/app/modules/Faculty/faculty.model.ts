@@ -1,7 +1,6 @@
-import { model, Schema } from "mongoose";
-import { FacultyModel, TFaculty, TUserName } from "./faculty.interface";
-import { BloodGroup, Gender } from "./faculty.constant";
-
+import { model, Schema } from 'mongoose';
+import { FacultyModel, TFaculty, TUserName } from './faculty.interface';
+import { BloodGroup, Gender } from './faculty.constant';
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -77,11 +76,20 @@ const facultySchema = new Schema<TFaculty, FacultyModel>(
       type: String,
       required: [true, 'Permanent address is required'],
     },
-    profileImg: { type: String , default: ""},
+    profileImg: { type: String, default: '' },
     academicDepartment: {
       type: Schema.Types.ObjectId,
       required: [true, 'User id is required'],
       ref: 'User',
+    },
+    admissionSemester: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicSemester',
+      required: true,
+    },
+    academicFaculty: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicFaculty',
     },
     isDeleted: {
       type: Boolean,

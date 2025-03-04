@@ -18,7 +18,6 @@ export type TUserName = {
 };
 
 export type TFaculty = {
-  academicFaculty: Types.ObjectId;
   id: string;
   user: Types.ObjectId;
   designation: string;
@@ -33,6 +32,8 @@ export type TFaculty = {
   permanentAddress: string;
   profileImg?: string;
   academicDepartment: Types.ObjectId;
+  admissionSemester: Types.ObjectId;
+  academicFaculty: Types.ObjectId;
   isDeleted: boolean;
 };
 

@@ -57,7 +57,7 @@ router.get(
     USER_ROLE.faculty,
     USER_ROLE.student,
   ),
-  CourseController.assignFacultiesWithCourse,
+  CourseController.getFacultiesWithCourse,
 );
 
 router.delete(

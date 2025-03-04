@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // <-----------------------Third. service file create ------------------------->
 
 import mongoose from 'mongoose';
@@ -149,43 +151,40 @@ const getSingleStudentIntoDB = async (id: string) => {
 };
 
 const deleteStudentDB = async (id: string) => {
-  const isExistStudent = await Student.findById(id);
-  if (!isExistStudent) {
-    throw new AppError(StatusCodes.BAD_REQUEST, 'student data is not Exist');
-  }
-
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
 
-    const deleteStudent = await Student.findByIdAndUpdate(
+    const deletedStudent = await Student.findByIdAndUpdate(
       id,
-      { isDelete: true },
-      { new: true, session },
+      { isDeleted: true },
+      { new: true, session, runValidators: true },
     );
 
-    if (!deleteStudent) {
-      throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to delete Student');
+
+    if (!deletedStudent) {
+      throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to delete student');
     }
 
-    const deleteUser = await User.findByIdAndUpdate(
-      id,
+    // get user _id from deletedStudent
+    const userId = deletedStudent.user;
+
+    const deletedUser = await User.findByIdAndUpdate(
+      userId,
       { isDeleted: true },
       { new: true, session },
     );
 
-    if (!deleteUser) {
+    if (!deletedUser) {
       throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to delete user');
     }
 
     await session.commitTransaction();
     await session.endSession();
 
-    return deleteStudent;
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  } catch (error) {
+    return deletedStudent;
+  } catch (err) {
     await session.abortTransaction();
     await session.endSession();
     throw new Error('Failed to delete student');
