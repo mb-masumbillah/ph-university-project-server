@@ -13,7 +13,7 @@ router.post(
   validationRequest(
     SemesterRegistrationValidations.createSemesterRegistrationValidationSchema,
   ),
-  SemesterRegistrationController.createSemesterRegistration,
+  semesterRegisterController.createSemesterRegister,
 );
 
 router.get(
