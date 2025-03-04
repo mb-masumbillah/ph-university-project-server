@@ -33,7 +33,7 @@ router.patch(
   validationRequest(
     SemesterRegistrationValidations.upadateSemesterRegistrationValidationSchema,
   ),
-  SemesterRegistrationController.updateSemesterRegistration,
+  semesterRegisterController.updateSemesterRegister,
 );
 
 router.delete(
