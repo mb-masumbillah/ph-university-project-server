@@ -54,7 +54,7 @@ router.post(
   '/change-status/:id',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   validationRequest(UserValidation.changeStatusValidationSchema),
-  UserControllers.changeStatus,
+  userController.changeStatus,
 );
 
 router.get(
@@ -65,7 +65,7 @@ router.get(
     USER_ROLE.faculty,
     USER_ROLE.student,
   ),
-  UserControllers.getMe,
+  userController.getMe,
 );
 
 
