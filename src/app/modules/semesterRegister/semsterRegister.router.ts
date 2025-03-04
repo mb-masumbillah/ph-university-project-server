@@ -39,7 +39,7 @@ router.patch(
 router.delete(
   '/:id',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin),
-  SemesterRegistrationController.deleteSemesterRegistration,
+  semesterRegisterController.deleteSemesterRegistration,
 );
 
 router.get(
@@ -50,6 +50,6 @@ router.get(
     USER_ROLE.faculty,
     USER_ROLE.student,
   ),
-  SemesterRegistrationController.getAllSemesterRegistrations,
+  semesterRegisterController.getAllSemesterRegister,
 );
 export const SemesterRegister = router;
