@@ -10,7 +10,7 @@ const router = Router();
 router.post(
   '/create-semester-registration',
   auth(USER_ROLE.superAdmin, USER_ROLE.admin),
-  validateRequest(
+  validationRequest(
     SemesterRegistrationValidations.createSemesterRegistrationValidationSchema,
   ),
   SemesterRegistrationController.createSemesterRegistration,
