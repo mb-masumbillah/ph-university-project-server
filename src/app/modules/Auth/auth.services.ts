@@ -1,30 +1,31 @@
-import { StatusCodes } from 'http-status-codes';
-import { AppError } from '../../Error/AppError';
-import { User } from '../user/user.model';
-import { TLoginUser } from './auth.interface';
-import { JwtPayload } from 'jsonwebtoken';
-import config from '../../config';
 import bcrypt from 'bcrypt';
-import { createToken } from './auth.utils';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { TLoginUser } from './auth.interface';
+import { User } from '../user/user.model';
+import { AppError } from '../../Error/AppError';
+import { StatusCodes } from 'http-status-codes';
+import { createToken, verifyToken } from './auth.utils';
+import config from '../../config';
 import sendEmail from '../../../utils/sendEmail';
+
 
 const loginUser = async (payload: TLoginUser) => {
   // checking if the user is exist
-  const user = await User.isUserExistsByCustomID(payload?.id);
+  const user = await User.isUserExistsByCustomID(payload.id);
 
   if (!user) {
     throw new AppError(StatusCodes.NOT_FOUND, 'This user is not found !');
   }
-
   // checking if the user is already deleted
 
   const isDeleted = user?.isDeleted;
+
   if (isDeleted) {
     throw new AppError(StatusCodes.FORBIDDEN, 'This user is deleted !');
   }
 
   // checking if the user is blocked
+
   const userStatus = user?.status;
 
   if (userStatus === 'blocked') {
@@ -33,13 +34,14 @@ const loginUser = async (payload: TLoginUser) => {
 
   //checking if the password is correct
 
-  if (!(await User.isPasswordMatched(payload?.password, user?.password))) {
+  if (!(await User.isPasswordMatched(payload?.password, user?.password)))
     throw new AppError(StatusCodes.FORBIDDEN, 'Password do not matched');
-  }
+
+  //create token and sent to the  client
 
   const jwtPayload = {
-    userId: user?.id,
-    role: user?.role,
+    userId: user.id,
+    role: user.role,
   };
 
   const accessToken = createToken(
@@ -57,39 +59,43 @@ const loginUser = async (payload: TLoginUser) => {
   return {
     accessToken,
     refreshToken,
-    needPasswordChange: user?.needsPasswordChange,
+    needsPasswordChange: user?.needsPasswordChange,
   };
 };
 
-const changePasswordService = async (
+const changePassword = async (
   userData: JwtPayload,
   payload: { oldPassword: string; newPassword: string },
 ) => {
   // checking if the user is exist
-  const user = await User.isUserExistsByCustomID(userData?.userId);
+  const user = await User.isUserExistsByCustomID(userData.userId);
 
   if (!user) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'This userr is not found');
+    throw new AppError(StatusCodes.NOT_FOUND, 'This user is not found !');
   }
-
-  // checking if the use is already deleted
+  // checking if the user is already deleted
 
   const isDeleted = user?.isDeleted;
+
   if (isDeleted) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This user is deleted');
+    throw new AppError(StatusCodes.FORBIDDEN, 'This user is deleted !');
   }
+
   // checking if the user is blocked
+
   const userStatus = user?.status;
-  if (!userStatus) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This user is blocked');
+
+  if (userStatus === 'blocked') {
+    throw new AppError(StatusCodes.FORBIDDEN, 'This user is blocked ! !');
   }
 
-  // checking if the password is correct
-  if (!(await User.isPasswordMatched(payload?.oldPassword, user?.password))) {
+  //checking if the password is correct
+
+  if (!(await User.isPasswordMatched(payload.oldPassword, user?.password)))
     throw new AppError(StatusCodes.FORBIDDEN, 'Password do not matched');
-  }
 
-  const newHashPassword = await bcrypt.hash(
+  //hash new password
+  const newHashedPassword = await bcrypt.hash(
     payload.newPassword,
     Number(config.bcrypt_salt_rounds),
   );
@@ -100,7 +106,7 @@ const changePasswordService = async (
       role: userData.role,
     },
     {
-      password: newHashPassword,
+      password: newHashedPassword,
       needsPasswordChange: false,
       passwordChangedAt: new Date(),
     },
@@ -109,11 +115,9 @@ const changePasswordService = async (
   return null;
 };
 
-const refreshTokenServices = async (token: string) => {
-  const decoded = jwt.verify(
-    token,
-    config.jwt_refresh_secret as string,
-  ) as JwtPayload;
+const refreshToken = async (token: string) => {
+  // checking if the given token is valid
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string);
 
   const { userId, iat } = decoded;
 
@@ -121,27 +125,27 @@ const refreshTokenServices = async (token: string) => {
   const user = await User.isUserExistsByCustomID(userId);
 
   if (!user) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'This userr is not found');
+    throw new AppError(StatusCodes.NOT_FOUND, 'This user is not found !');
   }
-
-  // checking if the use is already deleted
-
+  // checking if the user is already deleted
   const isDeleted = user?.isDeleted;
+
   if (isDeleted) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This user is deleted');
+    throw new AppError(StatusCodes.FORBIDDEN, 'This user is deleted !');
   }
+
   // checking if the user is blocked
   const userStatus = user?.status;
-  if (!userStatus) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This user is blocked');
+
+  if (userStatus === 'blocked') {
+    throw new AppError(StatusCodes.FORBIDDEN, 'This user is blocked ! !');
   }
 
-  // token change
   if (
     user.passwordChangedAt &&
     User.isJWTIssuedBeforePasswordChanged(user.passwordChangedAt, iat as number)
   ) {
-    throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not Authorized');
+    throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized !');
   }
 
   const jwtPayload = {
@@ -160,23 +164,25 @@ const refreshTokenServices = async (token: string) => {
   };
 };
 
-const forgetPasswordService = async (id: string) => {
-  const user = await User.isUserExistsByCustomID(id);
+const forgetPassword = async (userId: string) => {
+  // checking if the user is exist
+  const user = await User.isUserExistsByCustomID(userId);
 
   if (!user) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'This userr is not found');
+    throw new AppError(StatusCodes.NOT_FOUND, 'This user is not found !');
   }
-
-  // checking if the use is already deleted
-
+  // checking if the user is already deleted
   const isDeleted = user?.isDeleted;
+
   if (isDeleted) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This user is deleted');
+    throw new AppError(StatusCodes.FORBIDDEN, 'This user is deleted !');
   }
+
   // checking if the user is blocked
   const userStatus = user?.status;
-  if (!userStatus) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This user is blocked');
+
+  if (userStatus === 'blocked') {
+    throw new AppError(StatusCodes.FORBIDDEN, 'This user is blocked ! !');
   }
 
   const jwtPayload = {
@@ -190,34 +196,34 @@ const forgetPasswordService = async (id: string) => {
     '10m',
   );
 
-  const resetUILink = `${config.reset_pass_ui_link}?id=${user?.id}&token=${resetToken}`;
+  const resetUILink = `${config.reset_pass_ui_link}?id=${user.id}&token=${resetToken} `;
 
-  sendEmail(user?.email, resetUILink);
+  sendEmail(user.email, resetUILink);
 
-  // console.log(resetUILink);
 };
 
-const resetPasswordService = async (
-  token: string,
+const resetPassword = async (
   payload: { id: string; newPassword: string },
+  token: string,
 ) => {
   // checking if the user is exist
   const user = await User.isUserExistsByCustomID(payload?.id);
 
   if (!user) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'This userr is not found');
+    throw new AppError(StatusCodes.NOT_FOUND, 'This user is not found !');
   }
-
-  // checking if the use is already deleted
-
+  // checking if the user is already deleted
   const isDeleted = user?.isDeleted;
+
   if (isDeleted) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This user is deleted');
+    throw new AppError(StatusCodes.FORBIDDEN, 'This user is deleted !');
   }
+
   // checking if the user is blocked
   const userStatus = user?.status;
-  if (!userStatus) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This user is blocked');
+
+  if (userStatus === 'blocked') {
+    throw new AppError(StatusCodes.FORBIDDEN, 'This user is blocked ! !');
   }
 
   const decoded = jwt.verify(
@@ -225,7 +231,10 @@ const resetPasswordService = async (
     config.jwt_access_secret as string,
   ) as JwtPayload;
 
+  //localhost:3000?id=A-0001&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJBLTAwMDEiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MDI4NTA2MTcsImV4cCI6MTcwMjg1MTIxN30.-T90nRaz8-KouKki1DkCSMAbsHyb9yDi0djZU3D6QO4
+
   if (payload.id !== decoded.userId) {
+    // console.log(payload.id, decoded.userId);
     throw new AppError(StatusCodes.FORBIDDEN, 'You are forbidden!');
   }
 
@@ -250,8 +259,8 @@ const resetPasswordService = async (
 
 export const AuthServices = {
   loginUser,
-  changePasswordService,
-  refreshTokenServices,
-  forgetPasswordService,
-  resetPasswordService,
+  changePassword,
+  refreshToken,
+  forgetPassword,
+  resetPassword,
 };
