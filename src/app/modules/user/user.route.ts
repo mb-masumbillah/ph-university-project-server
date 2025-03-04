@@ -35,7 +35,7 @@ router.post(
     next();
   },
   validationRequest(createFacultyValidationSchema),
-  UserControllers.createFaculty,
+  userController.createFaculty,
 );
 
 router.post(
