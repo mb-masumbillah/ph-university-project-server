@@ -55,7 +55,8 @@ const getAllStudents = catchAsync(async (req, res) => {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'student is recived successfull',
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

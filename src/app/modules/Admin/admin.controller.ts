@@ -10,7 +10,8 @@ const getAllAdmin = catchAsync(async (req, res) => {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'all date get succesfull',
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

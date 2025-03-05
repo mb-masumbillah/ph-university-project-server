@@ -108,12 +108,13 @@ const getAllStudentIntoDB = async (query: Record<string, unknown>) => {
     Student.find()
       .populate('user')
       .populate('admissionSemester')
-      .populate({
-        path: 'academicDepartment',
-        populate: {
-          path: 'academicFaculty',
-        },
-      }),
+      .populate('academicDepartment academicFaculty'),
+    // .populate({
+    //   path: 'academicDepartment',
+    //   populate: {
+    //     path: 'academicFaculty',
+    //   },
+    // }),
     query,
   )
     .search(searchFields)
@@ -161,7 +162,6 @@ const deleteStudentDB = async (id: string) => {
       { isDeleted: true },
       { new: true, session, runValidators: true },
     );
-
 
     if (!deletedStudent) {
       throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to delete student');

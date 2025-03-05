@@ -12,12 +12,16 @@ const getAllAdminIntoDB = async (query: Record<string, unknown>) => {
   const adminQuery = new QueryBuilder(Admin.find(), query)
     .search(AdminSearchableFields)
     .filter()
-    .pagination()
     .sort()
+    .pagination()
     .fields();
 
-  const result = adminQuery.modelQuery;
-  return result;
+  const result = await adminQuery.modelQuery;
+  const meta = await adminQuery.countTotal();
+  return {
+    result,
+    meta,
+  };
 };
 
 const getSingleIntoDB = async (id: string) => {
