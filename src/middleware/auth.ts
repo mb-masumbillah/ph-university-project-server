@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { StatusCodes } from 'http-status-codes';
 import { AppError } from '../app/Error/AppError';
 import catchAsync from '../utils/catchAsync';
@@ -52,10 +54,22 @@ export const auth = (...requredRoles: TuserRole[]) => {
 
 
     // check if the token is valid - system - 2
-    const decoded = jwt.verify(
-      token,
-      config.jwt_access_secret as string,
-    ) as JwtPayload;
+   
+    let decoded;
+
+    try {
+      decoded = jwt.verify(
+        token,
+        config.jwt_access_secret as string,
+      ) as JwtPayload;
+    } catch (err) {
+      throw new AppError(StatusCodes.UNAUTHORIZED, 'UNAUTHORIZED');
+    }
+    
+    // const decoded = jwt.verify(
+    //   token,
+    //   config.jwt_access_secret as string,
+    // ) as JwtPayload;
 
     const { role, userId, iat } = decoded;
 

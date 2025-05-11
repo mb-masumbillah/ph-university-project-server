@@ -1,10 +1,9 @@
-import { StatusCodes } from "http-status-codes";
-import catchAsync from "../../../utils/catchAsync";
-import sendResponse from "../../../utils/sendResponse";
-import config from "../../config";
-import { AuthServices } from "./auth.services";
-import { AppError } from "../../Error/AppError";
-
+import { StatusCodes } from 'http-status-codes';
+import catchAsync from '../../../utils/catchAsync';
+import sendResponse from '../../../utils/sendResponse';
+import config from '../../config';
+import { AuthServices } from './auth.services';
+import { AppError } from '../../Error/AppError';
 
 const loginUser = catchAsync(async (req, res) => {
   const result = await AuthServices.loginUser(req.body);
@@ -13,7 +12,7 @@ const loginUser = catchAsync(async (req, res) => {
   res.cookie('refreshToken', refreshToken, {
     secure: config.NODE_ENV === 'production',
     httpOnly: true,
-    sameSite: 'none',
+    sameSite:'lax',
     maxAge: 1000 * 60 * 60 * 24 * 365,
   });
 

@@ -104,6 +104,7 @@ const getAllStudentIntoDB = async (query: Record<string, unknown>) => {
   // উপরের সব comment গুলার জন্য আমরা একটা class বানাইছি সেখানে সব গুলার কাজ করে পুরো code কে কমায় নিয়ে আসছি ।
 
   // এই খানে class use করে sort,search,filter,pagination fields এর কাজ করা হয়েছে ।
+ 
   const studentQuery = new QueryBuilder(
     Student.find()
       .populate('user')
